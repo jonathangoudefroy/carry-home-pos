@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
     const { error } = await resend.emails.send({
       from: 'Carry Home <onboarding@resend.dev>',
-      to: 'hey@wecarryart.com',
+      to: 'info@goudefroy.de',
       subject: `Neue Anmeldung: ${payload.name} (${payload.works.length} Werke)`,
       html,
     })
