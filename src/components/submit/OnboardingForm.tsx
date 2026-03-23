@@ -3,9 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { ImportPayload } from '@/lib/types'
-import { encodeImportCode } from '@/lib/import-code'
 import { WorkFormRow } from './WorkFormRow'
-import { ImportCodeDisplay } from './ImportCodeDisplay'
 
 interface WorkDraft {
   id: string
@@ -26,7 +24,6 @@ export function OnboardingForm() {
   const [error, setError] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
-  const [generatedCode, setGeneratedCode] = useState<string | null>(null)
 
   const addWork = () => {
     setWorks(prev => [...prev, { id: crypto.randomUUID(), title: '', price: '', medium: '' }])
@@ -80,7 +77,6 @@ export function OnboardingForm() {
         setError(data.error || 'Senden fehlgeschlagen')
         return
       }
-      setGeneratedCode(encodeImportCode(payload))
       setSent(true)
     } catch {
       setError('Netzwerkfehler. Bitte versuche es erneut oder nutze den manuellen Weg unten.')
@@ -89,44 +85,34 @@ export function OnboardingForm() {
     }
   }
 
-  const handleGenerateOnly = () => {
-    const payload = buildPayload()
-    if (!payload) return
-    setGeneratedCode(encodeImportCode(payload))
+  const resetForm = () => {
+    setName('')
+    setEmail('')
+    setIban('')
+    setBic('')
+    setPaypal('')
+    setWorks([{ id: '1', title: '', price: '', medium: '' }])
+    setError('')
+    setSent(false)
   }
 
-  if (sent && generatedCode) {
+  if (sent) {
     return (
-      <div className="min-h-screen bg-carry-pink flex flex-col items-center px-4 py-8">
-        <Image src="/carry-logo-mittig.png" alt="Carry" width={100} height={100} className="mb-6" />
-        <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-sm">
-          <div className="text-center mb-6">
-            <p className="text-lg font-bold text-[#3a7d5c] mb-1">Deine Daten wurden erfolgreich gesendet!</p>
-            <p className="text-sm text-gray-500">Du kannst den Import-Code unten auch manuell kopieren.</p>
+      <div className="min-h-screen bg-carry-pink flex flex-col items-center justify-center px-4 py-8">
+        <Image src="/carry-logo-mittig.png" alt="Carry" width={100} height={100} className="mb-8" />
+        <div className="w-full max-w-md bg-white rounded-2xl p-8 shadow-sm text-center">
+          <div className="w-16 h-16 rounded-full bg-[#3a7d5c] flex items-center justify-center mx-auto mb-5">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
           </div>
-          <ImportCodeDisplay code={generatedCode} email="hey@wecarryart.com" />
+          <h2 className="text-2xl font-bold text-[#0F131A] mb-3">Danke, {name}!</h2>
+          <p className="text-gray-600 leading-relaxed">
+            Deine Daten sind bei uns angekommen. Wir haben alles, was wir für den Verkauf deiner Werke am 25. April brauchen. Bis bald im LAP Bergmannstraße!
+          </p>
           <button
-            onClick={() => { setSent(false); setGeneratedCode(null) }}
-            className="w-full mt-4 py-3 text-sm text-gray-500 font-medium min-h-[44px]"
+            onClick={resetForm}
+            className="mt-8 text-sm text-gray-400 underline min-h-[44px]"
           >
-            Zurück zum Formular
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  if (generatedCode && !sent) {
-    return (
-      <div className="min-h-screen bg-carry-pink flex flex-col items-center px-4 py-8">
-        <Image src="/carry-logo-mittig.png" alt="Carry" width={100} height={100} className="mb-6" />
-        <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-sm">
-          <ImportCodeDisplay code={generatedCode} email="hey@wecarryart.com" />
-          <button
-            onClick={() => setGeneratedCode(null)}
-            className="w-full mt-4 py-3 text-sm text-gray-500 font-medium min-h-[44px]"
-          >
-            Zurück zum Formular
+            Weiteren Eintrag erstellen
           </button>
         </div>
       </div>
@@ -138,7 +124,7 @@ export function OnboardingForm() {
       <Image src="/carry-logo-mittig.png" alt="Carry" width={100} height={100} className="mb-4" />
       <h1 className="text-2xl font-bold text-[#0F131A] mb-1">Affordable Art Market</h1>
       <p className="text-sm text-gray-600 mb-6 text-center max-w-sm">
-        Trage deine Daten ein, um am 25. April in Berlin teilzunehmen. Am Ende erhältst du einen Import-Code.
+        Trage deine Daten ein, um am 25. April in Berlin teilzunehmen.
       </p>
 
       <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-sm space-y-4">
@@ -194,13 +180,6 @@ export function OnboardingForm() {
           className="w-full py-4 bg-[#FE4F40] text-white rounded-xl font-semibold text-base min-h-[52px] disabled:opacity-50"
         >
           {sending ? 'Wird gesendet...' : 'Daten absenden'}
-        </button>
-
-        <button
-          onClick={handleGenerateOnly}
-          className="w-full py-3 text-sm text-gray-500 font-medium min-h-[44px]"
-        >
-          Nur Import-Code generieren (manuell senden)
         </button>
       </div>
     </div>
