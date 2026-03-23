@@ -10,6 +10,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Carry Home POS",
   description: "Point of Sale for Carry Affordable Art Market",
+  robots: "noindex, nofollow",
 };
 
 export default function RootLayout({

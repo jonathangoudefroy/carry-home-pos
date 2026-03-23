@@ -24,6 +24,8 @@ export function OnboardingForm() {
     { id: '1', title: '', price: '', medium: '' },
   ])
   const [error, setError] = useState('')
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
   const [generatedCode, setGeneratedCode] = useState<string | null>(null)
 
   const addWork = () => {
@@ -38,16 +40,16 @@ export function OnboardingForm() {
     setWorks(prev => prev.map(w => w.id === id ? { ...w, [field]: value } : w))
   }
 
-  const handleGenerate = () => {
+  const buildPayload = (): ImportPayload | null => {
     setError('')
-    if (!name.trim()) { setError('Bitte gib deinen Namen ein'); return }
-    if (!email.trim()) { setError('Bitte gib deine E-Mail ein'); return }
-    if (!iban.trim() && !paypal.trim()) { setError('Bitte gib mindestens IBAN oder PayPal an'); return }
+    if (!name.trim()) { setError('Bitte gib deinen Namen ein'); return null }
+    if (!email.trim()) { setError('Bitte gib deine E-Mail ein'); return null }
+    if (!iban.trim() && !paypal.trim()) { setError('Bitte gib mindestens IBAN oder PayPal an'); return null }
 
     const validWorks = works.filter(w => w.title.trim() && w.price)
-    if (validWorks.length === 0) { setError('Mindestens ein Werk mit Titel und Preis'); return }
+    if (validWorks.length === 0) { setError('Mindestens ein Werk mit Titel und Preis'); return null }
 
-    const payload: ImportPayload = {
+    return {
       v: 1,
       name: name.trim(),
       email: email.trim(),
@@ -60,16 +62,66 @@ export function OnboardingForm() {
         medium: w.medium.trim() || undefined,
       })),
     }
+  }
 
+  const handleSubmit = async () => {
+    const payload = buildPayload()
+    if (!payload) return
+
+    setSending(true)
+    try {
+      const res = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error || 'Senden fehlgeschlagen')
+        return
+      }
+      setGeneratedCode(encodeImportCode(payload))
+      setSent(true)
+    } catch {
+      setError('Netzwerkfehler. Bitte versuche es erneut oder nutze den manuellen Weg unten.')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const handleGenerateOnly = () => {
+    const payload = buildPayload()
+    if (!payload) return
     setGeneratedCode(encodeImportCode(payload))
   }
 
-  if (generatedCode) {
+  if (sent && generatedCode) {
     return (
       <div className="min-h-screen bg-carry-pink flex flex-col items-center px-4 py-8">
         <Image src="/carry-logo-mittig.png" alt="Carry" width={100} height={100} className="mb-6" />
         <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-sm">
-          <ImportCodeDisplay code={generatedCode} email="info@wecarryart.com" />
+          <div className="text-center mb-6">
+            <p className="text-lg font-bold text-[#3a7d5c] mb-1">Deine Daten wurden erfolgreich gesendet!</p>
+            <p className="text-sm text-gray-500">Du kannst den Import-Code unten auch manuell kopieren.</p>
+          </div>
+          <ImportCodeDisplay code={generatedCode} email="hey@wecarryart.com" />
+          <button
+            onClick={() => { setSent(false); setGeneratedCode(null) }}
+            className="w-full mt-4 py-3 text-sm text-gray-500 font-medium min-h-[44px]"
+          >
+            Zurück zum Formular
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (generatedCode && !sent) {
+    return (
+      <div className="min-h-screen bg-carry-pink flex flex-col items-center px-4 py-8">
+        <Image src="/carry-logo-mittig.png" alt="Carry" width={100} height={100} className="mb-6" />
+        <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-sm">
+          <ImportCodeDisplay code={generatedCode} email="hey@wecarryart.com" />
           <button
             onClick={() => setGeneratedCode(null)}
             className="w-full mt-4 py-3 text-sm text-gray-500 font-medium min-h-[44px]"
@@ -137,10 +189,18 @@ export function OnboardingForm() {
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <button
-          onClick={handleGenerate}
-          className="w-full py-4 bg-[#FE4F40] text-white rounded-xl font-semibold text-base min-h-[52px]"
+          onClick={handleSubmit}
+          disabled={sending}
+          className="w-full py-4 bg-[#FE4F40] text-white rounded-xl font-semibold text-base min-h-[52px] disabled:opacity-50"
         >
-          Import-Code generieren
+          {sending ? 'Wird gesendet...' : 'Daten absenden'}
+        </button>
+
+        <button
+          onClick={handleGenerateOnly}
+          className="w-full py-3 text-sm text-gray-500 font-medium min-h-[44px]"
+        >
+          Nur Import-Code generieren (manuell senden)
         </button>
       </div>
     </div>
