@@ -141,8 +141,14 @@ export function OnboardingForm() {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base outline-none focus:border-[#FE4F40] min-h-[44px]" />
             <input placeholder="BIC" value={bic} onChange={e => setBic(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base outline-none focus:border-[#FE4F40] min-h-[44px]" />
-            <input placeholder="PayPal (E-Mail oder Username)" value={paypal} onChange={e => setPaypal(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base outline-none focus:border-[#FE4F40] min-h-[44px]" />
+            <div>
+              <input placeholder="PayPal.me-Link (z.B. paypal.me/deinname)" value={paypal} onChange={e => setPaypal(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base outline-none focus:border-[#FE4F40] min-h-[44px]" />
+              <p className="text-xs text-gray-400 mt-1">
+                Noch keinen? Erstelle ihn kostenlos auf{' '}
+                <a href="https://www.paypal.me/" target="_blank" rel="noopener noreferrer" className="underline text-[#0070ba]">paypal.me</a>
+              </p>
+            </div>
           </div>
         </div>
 
