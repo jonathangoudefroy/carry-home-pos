@@ -6,13 +6,14 @@ export async function POST(request: Request) {
     const resend = new Resend(process.env.RESEND_API_KEY)
     const payload: ImportPayload = await request.json()
 
-    if (!payload.name || !payload.email || !payload.works?.length) {
+    if (!payload.name || !payload.email) {
       return Response.json({ error: 'Ungültige Daten' }, { status: 400 })
     }
 
     const importCode = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
 
-    const worksHtml = payload.works
+    const works = payload.works || []
+    const worksHtml = works
       .map(w => {
         const qty = w.quantity && w.quantity > 1 ? ` (${w.quantity}x)` : ''
         return `<tr><td style="padding:8px 12px;border-bottom:1px solid #eee">${w.title}${qty}</td><td style="padding:8px 12px;border-bottom:1px solid #eee">${w.medium || '–'}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${w.price} €</td></tr>`
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
           ${payload.bic ? `<tr><td style="color:#888;padding:4px 0">BIC</td><td>${payload.bic}</td></tr>` : ''}
           ${payload.paypal ? `<tr><td style="color:#888;padding:4px 0">PayPal</td><td>${payload.paypal}</td></tr>` : ''}
         </table>
-        <h3>Werke (${payload.works.length})</h3>
+        ${works.length > 0 ? `<h3>Werke (${works.length})</h3>` : '<h3>Keine Werke angegeben</h3>'}
         <table style="width:100%;border-collapse:collapse">
           <thead><tr style="background:#f8f9fa"><th style="padding:8px 12px;text-align:left">Titel</th><th style="padding:8px 12px;text-align:left">Infos</th><th style="padding:8px 12px;text-align:right">Preis</th></tr></thead>
           <tbody>${worksHtml}</tbody>
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
     const { error } = await resend.emails.send({
       from: 'Carry Home <onboarding@resend.dev>',
       to: 'goudyjonny@googlemail.com',
-      subject: `Neue Anmeldung: ${payload.name} (${payload.works.length} Werke)`,
+      subject: `Neue Anmeldung: ${payload.name}${works.length > 0 ? ` (${works.length} Werke)` : ''}`,
       html,
     })
 

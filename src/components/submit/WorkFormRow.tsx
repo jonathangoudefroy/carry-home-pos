@@ -18,7 +18,7 @@ export function WorkFormRow({ title, price, medium, quantity, onTitleChange, onP
     <div className="flex gap-2 items-start">
       <div className="flex-1 space-y-2">
         <input
-          placeholder="Titel *"
+          placeholder="Titel"
           value={title}
           onChange={e => onTitleChange(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-[#FE4F40] bg-white min-h-[44px]"
@@ -31,7 +31,7 @@ export function WorkFormRow({ title, price, medium, quantity, onTitleChange, onP
         />
         <div className="flex gap-2">
           <input
-            placeholder="Preis € *"
+            placeholder="Preis €"
             type="number"
             min="0"
             step="1"

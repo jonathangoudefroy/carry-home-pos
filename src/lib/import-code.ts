@@ -22,7 +22,7 @@ function isValidImportPayload(obj: unknown): obj is ImportPayload {
   if (p.v !== 1) return false
   if (typeof p.name !== 'string' || !p.name) return false
   if (typeof p.email !== 'string' || !p.email) return false
-  if (!Array.isArray(p.works) || p.works.length === 0) return false
+  if (!Array.isArray(p.works)) return false
   for (const w of p.works) {
     if (!w || typeof w !== 'object') return false
     const work = w as Record<string, unknown>

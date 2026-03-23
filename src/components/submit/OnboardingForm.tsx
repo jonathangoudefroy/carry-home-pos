@@ -45,7 +45,6 @@ export function OnboardingForm() {
     if (!iban.trim() && !paypal.trim()) { setError('Bitte gib mindestens IBAN oder PayPal an'); return null }
 
     const validWorks = works.filter(w => w.title.trim() && w.price)
-    if (validWorks.length === 0) { setError('Mindestens ein Werk mit Titel und Preis'); return null }
 
     return {
       v: 1,
