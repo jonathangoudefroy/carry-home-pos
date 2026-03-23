@@ -30,6 +30,8 @@ export function SettingsScreen({
 }: SettingsScreenProps) {
   const [editingArtist, setEditingArtist] = useState<Artist | 'new' | null>(null)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const [importData, setImportData] = useState('')
+  const [importMessage, setImportMessage] = useState('')
 
   const handleLoadDemo = () => {
     const existing = new Set(artists.map(a => a.id))
@@ -49,6 +51,40 @@ export function SettingsScreen({
   const handleReset = () => {
     onResetAll()
     setShowResetConfirm(false)
+  }
+
+  const handleExportAll = () => {
+    const json = JSON.stringify({ v: 1, artists })
+    const base64 = btoa(unescape(encodeURIComponent(json)))
+    navigator.clipboard.writeText(base64).catch(() => {})
+    const el = document.createElement('textarea')
+    el.value = base64
+    el.style.position = 'fixed'
+    el.style.opacity = '0'
+    document.body.appendChild(el)
+    el.select()
+    document.execCommand('copy')
+    document.body.removeChild(el)
+    setImportMessage('Daten in Zwischenablage kopiert!')
+    setTimeout(() => setImportMessage(''), 3000)
+  }
+
+  const handleImportAll = () => {
+    setImportMessage('')
+    try {
+      const json = decodeURIComponent(escape(atob(importData.trim())))
+      const parsed = JSON.parse(json)
+      if (!parsed.artists || !Array.isArray(parsed.artists)) {
+        setImportMessage('Ungültiges Datenformat')
+        return
+      }
+      onSetArtists(parsed.artists)
+      setImportData('')
+      setImportMessage('Daten erfolgreich importiert!')
+      setTimeout(() => setImportMessage(''), 3000)
+    } catch {
+      setImportMessage('Ungültiger Import-Code')
+    }
   }
 
   if (editingArtist) {
@@ -123,6 +159,36 @@ export function SettingsScreen({
 
       {/* PIN */}
       <PinChanger currentPin={pin} onChangePin={onChangePin} />
+
+      {/* Export/Import all data */}
+      <div className="space-y-3">
+        <h3 className="font-semibold text-text-primary">Daten übertragen</h3>
+        <button
+          onClick={handleExportAll}
+          className="w-full py-3 bg-card border border-border rounded-lg font-medium text-text-primary min-h-[44px]"
+        >
+          Alle Daten exportieren
+        </button>
+        <textarea
+          value={importData}
+          onChange={e => setImportData(e.target.value)}
+          placeholder="Export-Code hier einfügen..."
+          rows={3}
+          className="w-full px-4 py-3 border border-border rounded-lg text-sm font-mono outline-none focus:border-accent resize-none"
+        />
+        <button
+          onClick={handleImportAll}
+          disabled={!importData.trim()}
+          className="w-full py-3 bg-accent text-white rounded-lg font-medium disabled:opacity-40 min-h-[44px]"
+        >
+          Alle Daten importieren
+        </button>
+        {importMessage && (
+          <p className={`text-sm ${importMessage.includes('erfolgreich') || importMessage.includes('kopiert') ? 'text-success' : 'text-red-500'}`}>
+            {importMessage}
+          </p>
+        )}
+      </div>
 
       {/* Reset */}
       <div>
