@@ -15,7 +15,7 @@ export function QrCodeTab({ artist, work }: QrCodeTabProps) {
 
   useEffect(() => {
     if (!artist.iban || !artist.bic) return
-    const epc = buildEpcString(artist.bic, artist.name, artist.iban, work.price, work.title)
+    const epc = buildEpcString(artist.bic, artist.name, artist.iban, work.price, artist.name, work.title)
     QRCode.toDataURL(epc, { width: 280, margin: 2 })
       .then(setQrUrl)
       .catch(console.error)

@@ -8,8 +8,8 @@ interface ArtistCardProps {
 }
 
 export function ArtistCard({ artist, onClick }: ArtistCardProps) {
-  const available = artist.works.filter(w => !w.sold).length
-  const total = artist.works.length
+  const availableCount = artist.works.reduce((sum, w) => sum + (w.quantity - w.soldCount), 0)
+  const totalCount = artist.works.reduce((sum, w) => sum + w.quantity, 0)
   const hasIban = !!artist.iban
   const hasPaypal = !!artist.paypal
 
@@ -20,7 +20,7 @@ export function ArtistCard({ artist, onClick }: ArtistCardProps) {
     >
       <h3 className="font-semibold text-text-primary text-lg">{artist.name}</h3>
       <p className="text-sm text-gray-500 mt-1">
-        {available} von {total} verfügbar
+        {availableCount} von {totalCount} verfügbar
       </p>
       <div className="flex gap-2 mt-2">
         {hasIban && (

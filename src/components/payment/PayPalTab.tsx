@@ -23,7 +23,7 @@ export function PayPalTab({ artist, work }: PayPalTabProps) {
 
   useEffect(() => {
     if (!paypalLink) return
-    QRCode.toDataURL(paypalLink, { width: 280, margin: 2 })
+    QRCode.toDataURL(paypalLink, { width: 280, margin: 2, errorCorrectionLevel: 'M' })
       .then(setQrUrl)
       .catch(console.error)
   }, [paypalLink])
@@ -44,8 +44,8 @@ export function PayPalTab({ artist, work }: PayPalTabProps) {
   if (!isPayPalUsername) {
     return (
       <div className="flex flex-col items-center py-8">
-        <p className="text-lg font-semibold text-text-primary mb-2">{work.price} €</p>
-        <p className="text-sm text-gray-500 mb-4">PayPal an {paypalValue}</p>
+        <p className="text-lg font-semibold text-text-primary mb-2">PayPal an {paypalValue}</p>
+        <p className="text-sm text-gray-500 mb-4">{work.price} €</p>
         <button
           onClick={handleCopy}
           className="px-6 py-3 bg-[#0070ba] text-white rounded-lg font-medium active:opacity-80 transition-opacity min-h-[44px]"

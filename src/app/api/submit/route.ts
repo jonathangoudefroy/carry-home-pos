@@ -13,7 +13,10 @@ export async function POST(request: Request) {
     const importCode = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
 
     const worksHtml = payload.works
-      .map(w => `<tr><td style="padding:8px 12px;border-bottom:1px solid #eee">${w.title}</td><td style="padding:8px 12px;border-bottom:1px solid #eee">${w.medium || '–'}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${w.price} €</td></tr>`)
+      .map(w => {
+        const qty = w.quantity && w.quantity > 1 ? ` (${w.quantity}x)` : ''
+        return `<tr><td style="padding:8px 12px;border-bottom:1px solid #eee">${w.title}${qty}</td><td style="padding:8px 12px;border-bottom:1px solid #eee">${w.medium || '–'}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${w.price} €</td></tr>`
+      })
       .join('')
 
     const html = `
@@ -28,7 +31,7 @@ export async function POST(request: Request) {
         </table>
         <h3>Werke (${payload.works.length})</h3>
         <table style="width:100%;border-collapse:collapse">
-          <thead><tr style="background:#f8f9fa"><th style="padding:8px 12px;text-align:left">Titel</th><th style="padding:8px 12px;text-align:left">Medium</th><th style="padding:8px 12px;text-align:right">Preis</th></tr></thead>
+          <thead><tr style="background:#f8f9fa"><th style="padding:8px 12px;text-align:left">Titel</th><th style="padding:8px 12px;text-align:left">Infos</th><th style="padding:8px 12px;text-align:right">Preis</th></tr></thead>
           <tbody>${worksHtml}</tbody>
         </table>
         <h3 style="margin-top:24px">Import-Code</h3>

@@ -10,6 +10,7 @@ interface WorkDraft {
   title: string
   price: string
   medium: string
+  quantity: string
 }
 
 export function OnboardingForm() {
@@ -19,14 +20,14 @@ export function OnboardingForm() {
   const [bic, setBic] = useState('')
   const [paypal, setPaypal] = useState('')
   const [works, setWorks] = useState<WorkDraft[]>([
-    { id: '1', title: '', price: '', medium: '' },
+    { id: '1', title: '', price: '', medium: '', quantity: '1' },
   ])
   const [error, setError] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
 
   const addWork = () => {
-    setWorks(prev => [...prev, { id: crypto.randomUUID(), title: '', price: '', medium: '' }])
+    setWorks(prev => [...prev, { id: crypto.randomUUID(), title: '', price: '', medium: '', quantity: '1' }])
   }
 
   const removeWork = (id: string) => {
@@ -57,6 +58,7 @@ export function OnboardingForm() {
         title: w.title.trim(),
         price: Number(w.price),
         medium: w.medium.trim() || undefined,
+        quantity: Number(w.quantity) > 1 ? Number(w.quantity) : undefined,
       })),
     }
   }
@@ -79,7 +81,7 @@ export function OnboardingForm() {
       }
       setSent(true)
     } catch {
-      setError('Netzwerkfehler. Bitte versuche es erneut oder nutze den manuellen Weg unten.')
+      setError('Netzwerkfehler. Bitte versuche es erneut.')
     } finally {
       setSending(false)
     }
@@ -91,7 +93,7 @@ export function OnboardingForm() {
     setIban('')
     setBic('')
     setPaypal('')
-    setWorks([{ id: '1', title: '', price: '', medium: '' }])
+    setWorks([{ id: '1', title: '', price: '', medium: '', quantity: '1' }])
     setError('')
     setSent(false)
   }
@@ -123,8 +125,8 @@ export function OnboardingForm() {
     <div className="min-h-screen bg-carry-pink flex flex-col items-center px-4 py-8">
       <Image src="/carry-logo-mittig.png" alt="Carry" width={100} height={100} className="mb-4" />
       <h1 className="text-2xl font-bold text-[#0F131A] mb-1">Affordable Art Market</h1>
-      <p className="text-sm text-gray-600 mb-6 text-center max-w-sm">
-        Trage deine Daten ein, um am 25. April in Berlin teilzunehmen.
+      <p className="text-sm text-gray-600 mb-6 text-center max-w-sm leading-relaxed">
+        Trage deine Bezahldaten ein, damit wir einen reibungslosen Verkauf deiner Werke am 25. April gewährleisten können. Die Zahlung läuft direkt über euch — Käufer:innen bezahlen euch per Überweisung, PayPal oder Bargeld. Von verkauften Werken stellt carry im Anschluss eine Rechnung über 30&nbsp;% Provision.
       </p>
 
       <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-sm space-y-4">
@@ -135,7 +137,7 @@ export function OnboardingForm() {
 
         <div className="pt-2">
           <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Zahlungsinformationen</p>
-          <p className="text-xs text-gray-400 mb-3">Mindestens IBAN oder PayPal angeben</p>
+          <p className="text-xs text-gray-500 mb-3">Am besten gibst du sowohl IBAN als auch PayPal an — so können Käufer:innen flexibel wählen.</p>
           <div className="space-y-3">
             <input placeholder="IBAN" value={iban} onChange={e => setIban(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base outline-none focus:border-[#FE4F40] min-h-[44px]" />
@@ -144,9 +146,8 @@ export function OnboardingForm() {
             <div>
               <input placeholder="PayPal.me-Link (z.B. paypal.me/deinname)" value={paypal} onChange={e => setPaypal(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base outline-none focus:border-[#FE4F40] min-h-[44px]" />
-              <p className="text-xs text-gray-400 mt-1">
-                Noch keinen? Erstelle ihn kostenlos auf{' '}
-                <a href="https://www.paypal.me/" target="_blank" rel="noopener noreferrer" className="underline text-[#0070ba]">paypal.me</a>
+              <p className="text-xs text-gray-400 mt-1 leading-relaxed">
+                Du findest ihn in der PayPal-App unter Profil &rarr; &lsquo;PayPal.me&rsquo;. Noch keinen? Öffne die PayPal-App &rarr; Profil &rarr; &lsquo;PayPal.me einrichten&rsquo;.
               </p>
             </div>
           </div>
@@ -161,9 +162,11 @@ export function OnboardingForm() {
                 title={w.title}
                 price={w.price}
                 medium={w.medium}
+                quantity={w.quantity}
                 onTitleChange={v => updateWork(w.id, 'title', v)}
                 onPriceChange={v => updateWork(w.id, 'price', v)}
                 onMediumChange={v => updateWork(w.id, 'medium', v)}
+                onQuantityChange={v => updateWork(w.id, 'quantity', v)}
                 onRemove={() => removeWork(w.id)}
                 canRemove={works.length > 1}
               />

@@ -1,21 +1,22 @@
 /**
  * Build an EPC069-12 QR code string for SEPA credit transfer.
- * See: https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/quick-response-code-guidelines-enable-data-capture-initiation
  */
 export function buildEpcString(
   bic: string,
-  name: string,
+  beneficiaryName: string,
   iban: string,
   amount: number,
-  reference: string
+  artistName: string,
+  workTitle: string
 ): string {
+  const reference = `LAP Art Market, ${artistName}, ${workTitle}`
   const lines = [
     'BCD',               // Service Tag
     '002',               // Version
     '1',                 // Character set (UTF-8)
     'SCT',               // Identification
     bic,                 // BIC
-    name.slice(0, 70),   // Beneficiary name (max 70)
+    beneficiaryName.slice(0, 70),   // Beneficiary name (max 70)
     iban.replace(/\s/g, ''), // IBAN
     `EUR${amount.toFixed(2)}`, // Amount
     '',                  // Purpose

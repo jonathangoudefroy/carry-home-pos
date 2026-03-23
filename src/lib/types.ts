@@ -3,7 +3,8 @@ export interface Work {
   title: string
   medium: string
   price: number
-  sold: boolean
+  quantity: number
+  soldCount: number
 }
 
 export interface Artist {
@@ -34,7 +35,7 @@ export interface ImportPayload {
   iban?: string
   bic?: string
   paypal?: string
-  works: { title: string; price: number; medium?: string }[]
+  works: { title: string; price: number; medium?: string; quantity?: number }[]
 }
 
 export type TabId = 'artists' | 'sales' | 'settings'

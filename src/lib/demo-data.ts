@@ -9,9 +9,9 @@ export const DEMO_ARTISTS: Artist[] = [
     bic: 'COBADEFFXXX',
     paypal: 'jonathan@example.com',
     works: [
-      { id: 'jg-1', title: 'Urban Fragments I', medium: 'Acryl auf Leinwand', price: 120, sold: false },
-      { id: 'jg-2', title: 'Urban Fragments II', medium: 'Acryl auf Leinwand', price: 150, sold: false },
-      { id: 'jg-3', title: 'Berliner Morgen', medium: 'Fotografie', price: 80, sold: false },
+      { id: 'jg-1', title: 'Urban Fragments I', medium: 'Acryl auf Leinwand, 60x60cm', price: 120, quantity: 1, soldCount: 0 },
+      { id: 'jg-2', title: 'Urban Fragments II', medium: 'Acryl auf Leinwand, 80x60cm', price: 150, quantity: 1, soldCount: 0 },
+      { id: 'jg-3', title: 'Berliner Morgen', medium: 'Fotografie, 30x40cm', price: 80, quantity: 3, soldCount: 0 },
     ],
   },
   {
@@ -22,10 +22,10 @@ export const DEMO_ARTISTS: Artist[] = [
     bic: 'DEUTDEDBBER',
     paypal: '',
     works: [
-      { id: 'mn-1', title: 'Stille Wasser', medium: 'Öl auf Holz', price: 200, sold: false },
-      { id: 'mn-2', title: 'Nachtschicht', medium: 'Mixed Media', price: 95, sold: false },
-      { id: 'mn-3', title: 'Kreuzberg Blues', medium: 'Siebdruck', price: 60, sold: false },
-      { id: 'mn-4', title: 'Sommerlicht', medium: 'Aquarell', price: 110, sold: false },
+      { id: 'mn-1', title: 'Stille Wasser', medium: 'Öl auf Holz, 50x70cm', price: 200, quantity: 1, soldCount: 0 },
+      { id: 'mn-2', title: 'Nachtschicht', medium: 'Mixed Media, 40x40cm', price: 95, quantity: 1, soldCount: 0 },
+      { id: 'mn-3', title: 'Kreuzberg Blues', medium: 'Siebdruck, A3', price: 60, quantity: 5, soldCount: 0 },
+      { id: 'mn-4', title: 'Sommerlicht', medium: 'Aquarell, 30x40cm', price: 110, quantity: 1, soldCount: 0 },
     ],
   },
 ]

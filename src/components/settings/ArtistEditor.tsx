@@ -14,6 +14,7 @@ interface WorkDraft {
   title: string
   medium: string
   price: string
+  quantity: string
 }
 
 export function ArtistEditor({ artist, onSave, onCancel }: ArtistEditorProps) {
@@ -23,14 +24,14 @@ export function ArtistEditor({ artist, onSave, onCancel }: ArtistEditorProps) {
   const [bic, setBic] = useState(artist?.bic ?? '')
   const [paypal, setPaypal] = useState(artist?.paypal ?? '')
   const [works, setWorks] = useState<WorkDraft[]>(
-    artist?.works.map(w => ({ id: w.id, title: w.title, medium: w.medium, price: String(w.price) })) ?? [
-      { id: crypto.randomUUID(), title: '', medium: '', price: '' },
+    artist?.works.map(w => ({ id: w.id, title: w.title, medium: w.medium, price: String(w.price), quantity: String(w.quantity) })) ?? [
+      { id: crypto.randomUUID(), title: '', medium: '', price: '', quantity: '1' },
     ]
   )
   const [error, setError] = useState('')
 
   const addWork = () => {
-    setWorks(prev => [...prev, { id: crypto.randomUUID(), title: '', medium: '', price: '' }])
+    setWorks(prev => [...prev, { id: crypto.randomUUID(), title: '', medium: '', price: '', quantity: '1' }])
   }
 
   const removeWork = (id: string) => {
@@ -60,7 +61,8 @@ export function ArtistEditor({ artist, onSave, onCancel }: ArtistEditorProps) {
         title: w.title.trim(),
         medium: w.medium.trim(),
         price: Number(w.price),
-        sold: existingWork?.sold ?? false,
+        quantity: Math.max(1, Number(w.quantity) || 1),
+        soldCount: existingWork?.soldCount ?? 0,
       }
     })
 
@@ -106,11 +108,15 @@ export function ArtistEditor({ artist, onSave, onCancel }: ArtistEditorProps) {
                 <input placeholder="Titel *" value={w.title} onChange={e => updateWork(w.id, 'title', e.target.value)}
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:border-accent min-h-[44px]" />
                 <div className="flex gap-2">
-                  <input placeholder="Medium" value={w.medium} onChange={e => updateWork(w.id, 'medium', e.target.value)}
+                  <input placeholder="Infos (z.B. Acryl on Canvas, 60x60cm)" value={w.medium} onChange={e => updateWork(w.id, 'medium', e.target.value)}
                     className="flex-1 px-3 py-2 border border-border rounded-lg text-sm outline-none focus:border-accent min-h-[44px]" />
                   <input placeholder="Preis *" type="number" min="0" step="1" value={w.price}
                     onChange={e => updateWork(w.id, 'price', e.target.value)}
                     className="w-24 px-3 py-2 border border-border rounded-lg text-sm outline-none focus:border-accent min-h-[44px]" />
+                  <input placeholder="1" type="number" min="1" step="1" value={w.quantity}
+                    onChange={e => updateWork(w.id, 'quantity', e.target.value)}
+                    className="w-16 px-3 py-2 border border-border rounded-lg text-sm outline-none focus:border-accent min-h-[44px]"
+                    title="Stückzahl" />
                 </div>
               </div>
               {works.length > 1 && (

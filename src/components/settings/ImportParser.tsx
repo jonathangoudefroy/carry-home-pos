@@ -44,7 +44,8 @@ export function ImportParser({ existingArtists, onImport }: ImportParserProps) {
         title: w.title,
         medium: w.medium ?? '',
         price: w.price,
-        sold: false,
+        quantity: w.quantity ?? 1,
+        soldCount: 0,
       })),
     }
     onImport(artist)

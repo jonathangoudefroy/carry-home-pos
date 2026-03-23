@@ -23,14 +23,14 @@ export function useArtists() {
   const markWorkSold = useCallback((artistId: string, workId: string) => {
     setArtists(prev => prev.map(a => {
       if (a.id !== artistId) return a
-      return { ...a, works: a.works.map(w => w.id === workId ? { ...w, sold: true } : w) }
+      return { ...a, works: a.works.map(w => w.id === workId ? { ...w, soldCount: w.soldCount + 1 } : w) }
     }))
   }, [setArtists])
 
   const markWorkUnsold = useCallback((artistId: string, workId: string) => {
     setArtists(prev => prev.map(a => {
       if (a.id !== artistId) return a
-      return { ...a, works: a.works.map(w => w.id === workId ? { ...w, sold: false } : w) }
+      return { ...a, works: a.works.map(w => w.id === workId ? { ...w, soldCount: Math.max(0, w.soldCount - 1) } : w) }
     }))
   }, [setArtists])
 
